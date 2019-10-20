@@ -54,6 +54,9 @@ class Order(Entity):
 class Position(Entity):
     pass
 
+class AccountActivity(Entity):
+    pass
+
 
 class Bar(Entity):
     def __getattr__(self, key):

@@ -12,6 +12,7 @@ from .common import (
 from .entity import (
     Account, AccountConfigurations, Asset,
     Order, Position, BarSet, Clock, Calendar,
+    AccountActivity
 )
 from . import polygon
 
@@ -296,6 +297,36 @@ class REST(object):
     def close_all_positions(self):
         '''Liquidates all open positions at market price'''
         self.delete('/positions')
+
+    def list_activities(self,
+                        activity_types=['TRANS', 'MISC', 'DIV', 'FILL'],
+                        until=None,
+                        after=None,
+                        direction='desc',
+                        day=None,
+                        page_size=100,
+                        params=None):
+        '''Get a list of activities'''
+
+        if not isinstance(activity_types, str):
+            activity_types = ','.join(activity_types)
+        if params is None:
+            params = dict()
+        if direction is not None:
+            params['direction'] = direction
+        if page_size is not None:
+            params['page_size'] = page_size
+        if activity_types is not None:
+            params['activity_types'] = activity_types
+        if until is not None:
+            params['until'] = until
+        if after is not None:
+            params['after'] = after
+        if day is not None:
+            params['day'] = day
+
+        resp = self.get('/account/activities', params)
+        return [AccountActivity(o) for o in resp]
 
     def list_assets(self, status=None, asset_class=None):
         '''Get a list of assets'''
